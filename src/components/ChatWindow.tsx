@@ -3,6 +3,7 @@ import { MoreVertical, Phone, Search, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
+import { Input } from '@/components/ui/input';
 
 // Auto-generated replies based on message content
 const generateAutoReply = (message: string): string => {
@@ -39,6 +40,8 @@ const generateAutoReply = (message: string): string => {
 
 export function ChatWindow({ chat }) {
   const [messages, setMessages] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Update messages when chat changes
   useEffect(() => {
@@ -95,13 +98,27 @@ export function ChatWindow({ chat }) {
           <p className="text-xs text-gray-500">{contact?.online ? 'Online' : `Last seen ${contact?.lastSeen}`}</p>
         </div>
         <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" onClick={() => setShowSearch(!showSearch)}>
+            <Search className="h-5 w-5" />
+          </Button>
           <Button variant="ghost" size="icon"><Video className="h-5 w-5" /></Button>
           <Button variant="ghost" size="icon"><Phone className="h-5 w-5" /></Button>
-          <Button variant="ghost" size="icon"><Search className="h-5 w-5" /></Button>
           <Button variant="ghost" size="icon"><MoreVertical className="h-5 w-5" /></Button>
         </div>
       </header>
-      <MessageList messages={messages} />
+      
+      {showSearch && (
+        <div className="p-3 border-b border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900">
+          <Input
+            placeholder="Search messages..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full"
+          />
+        </div>
+      )}
+      
+      <MessageList messages={messages} searchQuery={searchQuery} />
       <MessageInput onSendMessage={handleSendMessage} />
     </div>
   );
